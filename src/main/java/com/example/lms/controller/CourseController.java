@@ -2,12 +2,14 @@ package com.example.lms.controller;
 
 import com.example.lms.dto.CourseRequest;
 import com.example.lms.dto.CourseResponse;
+import com.example.lms.enums.Level;
 import com.example.lms.service.CourseService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @RestController
@@ -26,8 +28,13 @@ public class CourseController {
     }
 
     @GetMapping
-    public List<CourseResponse> getAll() {
-        return courseService.getAll();
+    public List<CourseResponse> search(@RequestParam(required = false) String keyword,
+                                       @RequestParam(required = false) Long categoryId,
+                                       @RequestParam(required = false) Level level,
+                                       @RequestParam(required = false) BigDecimal minPrice,
+                                       @RequestParam(required = false) BigDecimal maxPrice,
+                                       @RequestParam(required = false) Double minRating) {
+        return courseService.search(keyword, categoryId, level, minPrice, maxPrice, minRating);
     }
 
     @GetMapping("/{id}")

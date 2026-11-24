@@ -5,6 +5,7 @@ import com.example.lms.dto.CourseResponse;
 import com.example.lms.entity.Category;
 import com.example.lms.entity.Course;
 import com.example.lms.entity.User;
+import com.example.lms.enums.Level;
 import com.example.lms.enums.Role;
 import com.example.lms.repository.CategoryRepository;
 import com.example.lms.repository.CourseRepository;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Service
@@ -59,8 +61,17 @@ public class CourseService {
     }
 
     @Transactional(readOnly = true)
-    public List<CourseResponse> getAll() {
-        return courseRepository.findAll().stream()
+    public List<CourseResponse> search(String keyword,
+                                       Long categoryId,
+                                       Level level,
+                                       BigDecimal minPrice,
+                                       BigDecimal maxPrice,
+                                       Double minRating) {
+        String pattern = (keyword == null || keyword.isBlank())
+                ? "%"
+                : "%" + keyword.trim().toLowerCase() + "%";
+
+        return courseRepository.search(pattern, categoryId, level, minPrice, maxPrice, minRating).stream()
                 .map(this::toResponse)
                 .toList();
     }
