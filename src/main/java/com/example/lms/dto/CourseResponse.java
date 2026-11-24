@@ -15,6 +15,8 @@ public record CourseResponse(
         String categoryName,
         Long teacherId,
         String teacherName,
-        LocalDateTime createdAt
+        LocalDateTime createdAt,
+        Double averageRating,
+        long reviewCount
 ) {
 }

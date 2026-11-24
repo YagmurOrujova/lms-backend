@@ -8,6 +8,7 @@ import com.example.lms.entity.User;
 import com.example.lms.enums.Role;
 import com.example.lms.repository.CategoryRepository;
 import com.example.lms.repository.CourseRepository;
+import com.example.lms.repository.ReviewRepository;
 import com.example.lms.repository.UserRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -22,13 +23,16 @@ public class CourseService {
     private final CourseRepository courseRepository;
     private final CategoryRepository categoryRepository;
     private final UserRepository userRepository;
+    private final ReviewRepository reviewRepository;
 
     public CourseService(CourseRepository courseRepository,
                          CategoryRepository categoryRepository,
-                         UserRepository userRepository) {
+                         UserRepository userRepository,
+                         ReviewRepository reviewRepository) {
         this.courseRepository = courseRepository;
         this.categoryRepository = categoryRepository;
         this.userRepository = userRepository;
+        this.reviewRepository = reviewRepository;
     }
 
     @Transactional
@@ -69,6 +73,10 @@ public class CourseService {
     }
 
     private CourseResponse toResponse(Course course) {
+        Double avg = reviewRepository.findAverageRatingByCourseId(course.getId());
+        double averageRating = avg == null ? 0.0 : Math.round(avg * 10.0) / 10.0;
+        long reviewCount = reviewRepository.countByCourseId(course.getId());
+
         return new CourseResponse(
                 course.getId(),
                 course.getTitle(),
@@ -79,7 +87,9 @@ public class CourseService {
                 course.getCategory().getName(),
                 course.getTeacher().getId(),
                 course.getTeacher().getFullName(),
-                course.getCreatedAt()
+                course.getCreatedAt(),
+                averageRating,
+                reviewCount
         );
     }
 }
